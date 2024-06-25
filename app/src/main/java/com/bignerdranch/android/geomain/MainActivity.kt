@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
         questionTextView = findViewById(R.id.question_text_view)
 
 
-          // Вешаем слушатель на кнопку "True"
+         // Вешаем слушатель на кнопку "True"
 
         trueButton.setOnClickListener { checkAnswer(true) }
 
