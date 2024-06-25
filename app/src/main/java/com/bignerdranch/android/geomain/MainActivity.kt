@@ -54,24 +54,23 @@ class MainActivity : ComponentActivity() {
         questionTextView = findViewById(R.id.question_text_view)
 
 
-//    TODO  Вешаем слушатель на кнопку "True"
-        trueButton.setOnClickListener { view: View ->
-            checkAnswer(true)
-//            Toast.makeText(this, R.string.correct_toast, Toast.LENGTH_SHORT).show()
-//                .setGravity(Gravity.TOP, 0, 0) - не удаётся за использовать.....
-        }
-//    TODO  Вешаем слушатель на кнопку "Fasle"
-        falseButton.setOnClickListener { view: View ->
-            checkAnswer(false)
-        }
+          // Вешаем слушатель на кнопку "True"
 
-//    TODO  Вешаем слушатель на кнопку "Next" или ">"
+        trueButton.setOnClickListener { checkAnswer(true) }
+
+
+         //  Вешаем слушатель на кнопку "Fasle"
+
+        falseButton.setOnClickListener { checkAnswer(false) }
+
+        //  Вешаем слушатель на кнопку "Next" или ">"
+
         nextButton.setOnClickListener {
             currentIndex = (currentIndex + 1) % questionBank.size
             updateQuestion()
         }
 
-//    TODO Вешаем слушатель на кнопку "Back" или "<" с проверкой на ноль индекса.
+        //  Вешаем слушатель на кнопку "Back" или "<" с проверкой на ноль индекса.
 
         backButton.setOnClickListener {
             if (currentIndex != 0) {
@@ -82,7 +81,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-//    TODO Добавляет возможноть изменять текст вопроса по нажатию на само поле вопроса.
+        //  Добавляет возможноть изменять текст вопроса по нажатию на само поле вопроса.
 
         questionTextView.setOnClickListener { view: View ->
             currentIndex = (currentIndex + 1) % questionBank.size
@@ -92,12 +91,16 @@ class MainActivity : ComponentActivity() {
         updateQuestion()
     }
 
-//    TODO Функция смены вопроса.
+
+    /**
+     * Функция смены вопроса.
+     */
     private fun updateQuestion() {
         val questionTextResId = questionBank[currentIndex].textResId
         questionTextView.setText(questionTextResId)
     }
-//    TODO Функция проверки ответа на вопрос.
+
+    // Функция проверки ответа на вопрос.
     private fun checkAnswer(userAnswer: Boolean) {
         val correctAnswer = questionBank[currentIndex].answer
 
@@ -106,34 +109,36 @@ class MainActivity : ComponentActivity() {
         } else {
             R.string.incorrect_toast
         }
-        Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
-            .show()
+
+        val a = Toast.makeText(applicationContext, messageResId, Toast.LENGTH_SHORT)
+        a.setGravity(Gravity.TOP, 0, 0)
+        a.show()
     }
 
-// TODO Проверка жизненого цикла программы в Logcat.
+    // Проверка жизненого цикла программы в Logcat.
     override fun onStart() {
         super.onStart()
-        Log.d(TAG,"onStart() called")
+        Log.d(TAG, "onStart() called")
     }
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG,"onResume() called")
+        Log.d(TAG, "onResume() called")
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d(TAG,"onPause() called")
+        Log.d(TAG, "onPause() called")
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d(TAG,"onStop() called")
+        Log.d(TAG, "onStop() called")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG,"onDestroy() called")
+        Log.d(TAG, "onDestroy() called")
     }
 }
 
