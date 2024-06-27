@@ -2,6 +2,7 @@ package com.bignerdranch.android.geomain
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -20,9 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.bignerdranch.android.geomain.ui.theme.GeoQuizTheme
 
 private const val TAG = "MainActivity"
+private const val KEY_INDEX = "index"
 
 class MainActivity : ComponentActivity() {
 
@@ -32,20 +35,21 @@ class MainActivity : ComponentActivity() {
     private lateinit var backButton: ImageButton
     private lateinit var questionTextView: TextView
 
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true)
-    )
-    private var currentIndex = 0
+    /**
+     * Связываем ViewModel и MainActivity
+     */
+    private val quizViewModel: QuizViewModel by lazy {
+        ViewModelProvider(this)[QuizViewModel::class.java]
+    }
+
 
     @SuppressLint("ShowToast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.geoquiz)
+
+        val currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
+        quizViewModel.currentIndex = currentIndex
 
         trueButton = findViewById(R.id.true_button)
         falseButton = findViewById(R.id.false_button)
@@ -53,56 +57,51 @@ class MainActivity : ComponentActivity() {
         backButton = findViewById(R.id.back_button)
         questionTextView = findViewById(R.id.question_text_view)
 
-
-         // Вешаем слушатель на кнопку "True"
+        // Вешаем слушатель на кнопку "True"
 
         trueButton.setOnClickListener { checkAnswer(true) }
 
-
-         //  Вешаем слушатель на кнопку "Fasle"
+        //  Вешаем слушатель на кнопку "Fasle"
 
         falseButton.setOnClickListener { checkAnswer(false) }
 
         //  Вешаем слушатель на кнопку "Next" или ">"
 
         nextButton.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNext()
             updateQuestion()
         }
 
-        //  Вешаем слушатель на кнопку "Back" или "<" с проверкой на ноль индекса.
+        //  Вешаем слушатель на кнопку "Back" или "<"
 
         backButton.setOnClickListener {
-            if (currentIndex != 0) {
-                currentIndex = (currentIndex - 1) % questionBank.size
-                updateQuestion()
-            } else {
-                Toast.makeText(this, "This first question!", Toast.LENGTH_SHORT).show()
-            }
+            quizViewModel.moveToBack()
+            updateQuestion()
         }
 
         //  Добавляет возможноть изменять текст вопроса по нажатию на само поле вопроса.
 
         questionTextView.setOnClickListener { view: View ->
-            currentIndex = (currentIndex + 1) % questionBank.size
+            quizViewModel.moveToNext()
             updateQuestion()
         }
 
         updateQuestion()
     }
 
-
     /**
      * Функция смены вопроса.
      */
     private fun updateQuestion() {
-        val questionTextResId = questionBank[currentIndex].textResId
+        val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
     }
 
-    // Функция проверки ответа на вопрос.
+    /**
+     * Функция проверки ответа на вопрос.
+     */
     private fun checkAnswer(userAnswer: Boolean) {
-        val correctAnswer = questionBank[currentIndex].answer
+        val correctAnswer = quizViewModel.currentQuestionAnswer
 
         val messageResId = if (userAnswer == correctAnswer) {
             R.string.correct_toast
@@ -110,12 +109,14 @@ class MainActivity : ComponentActivity() {
             R.string.incorrect_toast
         }
 
-        val a = Toast.makeText(applicationContext, messageResId, Toast.LENGTH_SHORT)
-        a.setGravity(Gravity.TOP, 0, 0)
-        a.show()
+        val toast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
+        toast.setGravity(Gravity.TOP, 0, 0) // Не работает метод
+        toast.show()
     }
 
-    // Проверка жизненого цикла программы в Logcat.
+    /**
+     * Проверка жизненого цикла программы в Logcat.
+     */
     override fun onStart() {
         super.onStart()
         Log.d(TAG, "onStart() called")
@@ -129,6 +130,12 @@ class MainActivity : ComponentActivity() {
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "onPause() called")
+    }
+
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
+        Log.i(TAG,"onSaveInstanceState")
+        savedInstanceState.putInt(KEY_INDEX, quizViewModel.currentIndex)
     }
 
     override fun onStop() {
