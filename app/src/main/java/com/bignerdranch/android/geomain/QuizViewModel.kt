@@ -19,15 +19,6 @@ class QuizViewModel : ViewModel() {
         Question(R.string.question_asia, true)
     )
 
-    // Переменная содержащая ответ вопроса
-    val currentQuestionAnswer: Boolean
-        get() = questionBank[currentIndex].answer
-
-    // Переменная содержащая индекс вопроса
-
-    val currentQuestionText: Int
-        get() = questionBank[currentIndex].textResId
-
     /**
      * Переход к следующему вопросу
      */
@@ -47,4 +38,13 @@ class QuizViewModel : ViewModel() {
             return
         }
     }
+
+    // Переменная содержащая ответ вопроса
+    val currentQuestionAnswer: Boolean
+        get() = questionBank[currentIndex].answer
+
+    // Переменная содержащая индекс вопроса
+
+    val currentQuestionText: Int
+        get() = questionBank[currentIndex].textResId
 }

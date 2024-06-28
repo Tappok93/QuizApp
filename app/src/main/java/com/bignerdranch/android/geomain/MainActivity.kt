@@ -1,39 +1,32 @@
 package com.bignerdranch.android.geomain
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import android.view.Gravity
 import android.view.View
-import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import com.bignerdranch.android.geomain.ui.theme.GeoQuizTheme
+import com.bignerdranch.android.geomain.databinding.ActivityMainBinding
 
 private const val TAG = "MainActivity"
 private const val KEY_INDEX = "index"
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
-    private lateinit var trueButton: Button
-    private lateinit var falseButton: Button
-    private lateinit var nextButton: ImageButton
-    private lateinit var backButton: ImageButton
-    private lateinit var questionTextView: TextView
+    lateinit var binding: ActivityMainBinding
+//    private lateinit var trueButton: Button
+//    private lateinit var falseButton: Button
+//    private lateinit var cheatButton: Button
+//    private lateinit var nextButton: ImageButton
+//    private lateinit var backButton: ImageButton
+//    private lateinit var questionTextView: TextView
 
     /**
      * Связываем ViewModel и MainActivity
@@ -46,47 +39,57 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("ShowToast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.geoquiz)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
 
         val currentIndex = savedInstanceState?.getInt(KEY_INDEX, 0) ?: 0
         quizViewModel.currentIndex = currentIndex
 
-        trueButton = findViewById(R.id.true_button)
-        falseButton = findViewById(R.id.false_button)
-        nextButton = findViewById(R.id.next_button)
-        backButton = findViewById(R.id.back_button)
-        questionTextView = findViewById(R.id.question_text_view)
+//        trueButton = findViewById(R.id.true_button)
+//        falseButton = findViewById(R.id.false_button)
+//        nextButton = findViewById(R.id.next_button)
+//        backButton = findViewById(R.id.back_button)
+//        cheatButton = findViewById(R.id.cheat_button)
+//        questionTextView = findViewById(R.id.question_text_view)
 
         // Вешаем слушатель на кнопку "True"
 
-        trueButton.setOnClickListener { checkAnswer(true) }
+        binding.trueButton.setOnClickListener { checkAnswer(true) }
 
         //  Вешаем слушатель на кнопку "Fasle"
 
-        falseButton.setOnClickListener { checkAnswer(false) }
+        binding.falseButton.setOnClickListener { checkAnswer(false) }
 
         //  Вешаем слушатель на кнопку "Next" или ">"
 
-        nextButton.setOnClickListener {
+        binding.nextButton.setOnClickListener {
             quizViewModel.moveToNext()
             updateQuestion()
         }
 
+        //  Вешаем слушатель на кнопку "Cheat", раздуваем intent
+
+        binding.cheatButton.setOnClickListener {
+            val intent = Intent(this, CheatActivity::class.java)
+            startActivity(intent)
+        }
+
         //  Вешаем слушатель на кнопку "Back" или "<"
 
-        backButton.setOnClickListener {
+        binding.backButton.setOnClickListener {
             quizViewModel.moveToBack()
             updateQuestion()
         }
 
         //  Добавляет возможноть изменять текст вопроса по нажатию на само поле вопроса.
 
-        questionTextView.setOnClickListener { view: View ->
+        binding.questionTextView.setOnClickListener { view: View ->
             quizViewModel.moveToNext()
             updateQuestion()
         }
 
         updateQuestion()
+        setContentView(binding.root)
     }
 
     /**
@@ -94,7 +97,7 @@ class MainActivity : ComponentActivity() {
      */
     private fun updateQuestion() {
         val questionTextResId = quizViewModel.currentQuestionText
-        questionTextView.setText(questionTextResId)
+        binding.questionTextView.setText(questionTextResId)
     }
 
     /**
@@ -134,7 +137,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
-        Log.i(TAG,"onSaveInstanceState")
+        Log.i(TAG, "onSaveInstanceState")
         savedInstanceState.putInt(KEY_INDEX, quizViewModel.currentIndex)
     }
 
