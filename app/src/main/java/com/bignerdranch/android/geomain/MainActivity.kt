@@ -50,31 +50,27 @@ class MainActivity : AppCompatActivity() {
 
 
         // Вешаем слушатель на кнопку "True"
-
         binding.trueButton.setOnClickListener { checkAnswer(true) }
 
         //  Вешаем слушатель на кнопку "Fasle"
-
         binding.falseButton.setOnClickListener { checkAnswer(false) }
 
         //  Вешаем слушатель на кнопку "Next" или ">"
-
         binding.nextButton.setOnClickListener {
             quizViewModel.moveToNext()
             updateQuestion()
         }
 
         //  Вешаем слушатель на кнопку "Cheat", раздуваем intent, увеличиваем счётчик количества подсказок
-
-        binding.cheatButton.setOnClickListener {view ->
+        binding.cheatButton.setOnClickListener { view ->
             val answerIsTrue = quizViewModel.currentQuestionAnswer
+            //Запуск второго активити.
             val intent = CheatActivity.newIntent(this@MainActivity, answerIsTrue)
-           // startActivityForResult(intent, REQUEST_CODE_CHEAT)
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val options = ActivityOptions
-                .makeClipRevealAnimation(view,0, 0, view.width, view.height)
-            startActivityForResult(intent, REQUEST_CODE_CHEAT, options.toBundle())
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val options = ActivityOptions
+                    .makeClipRevealAnimation(view, 0, 0, view.width, view.height)
+                startActivityForResult(intent, REQUEST_CODE_CHEAT, options.toBundle())
             } else {
                 startActivityForResult(intent, REQUEST_CODE_CHEAT)
             }
@@ -82,14 +78,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         //  Вешаем слушатель на кнопку "Back" или "<"
-
         binding.backButton.setOnClickListener {
             quizViewModel.moveToBack()
             updateQuestion()
         }
 
         //  Добавляет возможноть изменять текст вопроса по нажатию на само поле вопроса.
-
         binding.questionTextView.setOnClickListener { view: View ->
             quizViewModel.moveToNext()
             updateQuestion()
@@ -138,6 +132,7 @@ class MainActivity : AppCompatActivity() {
         val toast = Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
         toast.setGravity(Gravity.TOP, 0, 0) // Не работает метод
         toast.show()
+        quizViewModel.isCheater = false
     }
 
     /**

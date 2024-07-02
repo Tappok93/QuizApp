@@ -18,7 +18,6 @@ private const val EXTRA_ANSWER_IS_TRUE = "com.bignerdranch.android.geoquiz.answe
 
 class CheatActivity : AppCompatActivity() {
 
-    //var countCheckAnswer = 0
     private var answerIsTrue = false
     lateinit var bindingCheatActivity: ActivityCheatBinding
 
@@ -28,11 +27,10 @@ class CheatActivity : AppCompatActivity() {
         setContentView(bindingCheatActivity.root)
 
         /**
-         * Слушатель для кнопки "Show Answer" с ограничением на количество подсказок
+         * Слушатель для кнопки "Show Answer" с отображением количества подсказок.
          */
-
         bindingCheatActivity.showAnswerButton.setOnClickListener {
-            if (countCheckAnswer > 3){
+            if (countCheckAnswer > 3) {
                 Toast.makeText(this, "Больше нет подсказок!!!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -43,13 +41,16 @@ class CheatActivity : AppCompatActivity() {
             }
             bindingCheatActivity.answerTextView.setText(answerText)
             setAnswerShowResult(true)
-            Toast.makeText(this, "Вы воспользовались подсказкой $countCheckAnswer раз из 3", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "Вы воспользовались подсказкой $countCheckAnswer раз из 3",
+                Toast.LENGTH_SHORT
+            ).show()
 
         }
         answerIsTrue = intent.getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false)
 
         //Добавляем версию релиза для отображения
-
         bindingCheatActivity.versionApi.setText("API level " + Build.VERSION.RELEASE)
     }
 
